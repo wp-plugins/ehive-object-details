@@ -84,7 +84,7 @@ div.ehive-object-detail div.ehive-object-multiple-images div.ehive-images-tiny-s
 }
 
 div.ehive-object-detail div.ehive-object-multiple-images a.ehive-magnifying-glass:hover {
-	background: url(/wp-content/plugins/eHiveObjectDetails/images/magnifyingglass_btn_hover.png) bottom;
+	background: url(/wp-content/plugins/ehive-object-details/images/magnifyingglass_btn_hover.png) bottom;
 }
 
 /*
@@ -117,27 +117,27 @@ div.ehive-object-detail div.ehive-object-carousel-images div.ehive-carousel-navi
 }
 
 div.ehive-object-detail div.ehive-object-carousel-images div.ehive-carousel-navigation a.previous {
-    background: url(/wp-content/plugins/eHiveObjectDetails/images/previous_rounded.png) bottom;
+    background: url(/wp-content/plugins/ehive-object-details/images/previous_rounded.png) bottom;
     border-right: 2px solid #edebe6;
 }
 div.ehive-object-detail div.ehive-object-carousel-images div.ehive-carousel-navigation a.next {
-    background: url(/wp-content/plugins/eHiveObjectDetails/images/next_rounded.png) bottom;
+    background: url(/wp-content/plugins/ehive-object-details/images/next_rounded.png) bottom;
 }
 div.ehive-object-detail div.ehive-object-carousel-images div.ehive-carousel-navigation a.previous:hover {
-    background: url(/wp-content/plugins/eHiveObjectDetails/images/previous_rounded_hover.png) bottom;
+    background: url(/wp-content/plugins/ehive-object-details/images/previous_rounded_hover.png) bottom;
 }
 div.ehive-object-detail div.ehive-object-carousel-images div.ehive-carousel-navigation a.next:hover {
-    background: url(/wp-content/plugins/eHiveObjectDetails/images/next_rounded_hover.png) bottom;
+    background: url(/wp-content/plugins/ehive-object-details/images/next_rounded_hover.png) bottom;
 }
 div.ehive-object-detail a.ehive-magnifying-glass {
-   	background: url(/wp-content/plugins/eHiveObjectDetails/images/magnifyingglass_btn.png) bottom;
+   	background: url(/wp-content/plugins/ehive-object-details/images/magnifyingglass_btn.png) bottom;
 	width: 30px;
     height: 22px;
 	float:right;
 	margin:20px 10px 0 0;
 }
 div.ehive-object-detail div.ehive-object-carousel-images a.ehive-magnifying-glass:hover {
-	background: url(/wp-content/plugins/eHiveObjectDetails/images/magnifyingglass_btn_hover.png) bottom;
+	background: url(/wp-content/plugins/ehive-object-details/images/magnifyingglass_btn_hover.png) bottom;
 }
 div.ehive-object-detail div.ehive-object-carousel-images div.widget {
     width: auto;
