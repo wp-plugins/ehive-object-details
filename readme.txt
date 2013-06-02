@@ -89,7 +89,9 @@ This is the first stable release of the eHive Access plugin.
 
 == Screenshots ==
 
-1. eHive Object Details
+1. eHive Object Details, object record 2415 - Kit(s)ch(ick)en. 
+2. eHive Object Details shortcode help.
+3. eHive Object Details Settings.
 
 
 == Frequently Asked Questions ==
