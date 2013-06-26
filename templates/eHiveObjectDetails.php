@@ -57,13 +57,29 @@ if ($css_class == "") {
 			$imageInlineStyle = " style='$imageInlineStyle'";
 		}
 	
+		
+		if (isset($options['pretty_photo_enabled']) && $options['pretty_photo_enabled'] == 'on') {
+			$prettyPhotoEnabled = true;
+		} else {
+			$prettyPhotoEnabled = false;
+		}
+		
 		echo '<div class="ehive-item">';
 		
 		$imageMediaSet = $object->getMediaSetByIdentifier('image');	
-		
+				
 		if (isset($imageMediaSet)){
 			echo '<div class="ehive-item-image-wrap">';
-			$numberOfImages = count($imageMediaSet->mediaRows);		
+			
+			if (isset($options['images_to_display']) && $options['images_to_display'] == 'All images') {			
+				$numberOfImages = count($imageMediaSet->mediaRows);
+			} else {				
+				if (count($imageMediaSet->mediaRows) > 0) {
+					$numberOfImages = 1;
+				} else {
+					$numberOfImages = 0;
+				}
+			}
 	
 			if ( $numberOfImages == 1) {
 			
@@ -74,11 +90,18 @@ if ($css_class == "") {
 				
 				echo ("<div class='ehive-object-single-image' $galleryInlineStyle>");
 					echo '<div class="large-image-container">';
-						echo ('<a rel="prettyPhoto" href="'.$largeImageMedia->getMediaAttribute('url').'" title="'.$largeImageMedia->getMediaAttribute('title').'" target="_blank"><img src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="'.$mediumImageMedia->getMediaAttribute('title').'" title="'.$mediumImageMedia->getMediaAttribute('title').'" '.$imageInlineStyle.'/></a>');
+						if ($prettyPhotoEnabled) {
+							echo ('<a rel="prettyPhoto" href="'.$largeImageMedia->getMediaAttribute('url').'" title="'.$largeImageMedia->getMediaAttribute('title').'" target="_blank"><img src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="'.$mediumImageMedia->getMediaAttribute('title').'" title="'.$mediumImageMedia->getMediaAttribute('title').'" '.$imageInlineStyle.'/></a>');
+						} else {
+							echo ('<img src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="'.$mediumImageMedia->getMediaAttribute('title').'" title="'.$mediumImageMedia->getMediaAttribute('title').'" '.$imageInlineStyle.'/>');
+						}
 					echo '</div>';
-					echo ('<a rel="prettyPhoto" class="ehive-magnifying-glass" href="'.$largeImageMedia->getMediaAttribute('url').'" title="'.$largeImageMedia->getMediaAttribute('title').'"></a>');
+					if ($prettyPhotoEnabled) {
+						echo ('<a rel="prettyPhoto" class="ehive-magnifying-glass" href="'.$largeImageMedia->getMediaAttribute('url').'" title="'.$largeImageMedia->getMediaAttribute('title').'"></a>');
+					}
 				echo ('</div>');			
 			}
+			
 			
 			if ($numberOfImages > 1 & $numberOfImages <= 4) {
 			
@@ -88,21 +111,29 @@ if ($css_class == "") {
 				$mediumImageMedia = $mediaRow->getMediaByIdentifier('image_m');							
 				
 				echo "<div class='ehive-object-multiple-images' $galleryInlineStyle>";
-				echo '<div class="large-image-container">';
-					echo '<a class="large-image" href="'.$largeImageMedia->getMediaAttribute('url').'" rel="prettyPhoto" title="'.$largeImageMedia->getMediaAttribute('title').'"><img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/></a>';
+					if ($prettyPhotoEnabled) {
+						echo '<div class="large-image-container">';
+							echo '<a class="large-image" href="'.$largeImageMedia->getMediaAttribute('url').'" rel="prettyPhoto" title="'.$largeImageMedia->getMediaAttribute('title').'"><img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/></a>';
+						echo '</div>';
+						echo '<div class="ehive-images-tiny-square">';
+						foreach ($imageMediaSet->mediaRows as $mediaRow) {
+							$tsImageMedia = $mediaRow->getMediaByIdentifier('image_ts');
+							echo '<div class="ehive-images-tiny-square-image-wrap" >';
+								echo '<img src="'.$tsImageMedia->getMediaAttribute('url').'" alt="'.$tsImageMedia->getMediaAttribute('title').'" title="'.$tsImageMedia->getMediaAttribute('title').'" width="'.$tsImageMedia->getMediaAttribute('width').'" height="'.$tsImageMedia->getMediaAttribute('height').'" '.$imageInlineStyle.'/>';
+							echo '</div>';
+						}
+						echo '</div>';
+						echo '<a class ="ehive-magnifying-glass png-fix" href="'.$largeImageMedia->getMediaAttribute('url').'" rel="prettyPhoto" title="'.$largeImageMedia->getMediaAttribute('title').'"></a>';
+						
+					} else {
+						foreach ($imageMediaSet->mediaRows as $mediaRow) {
+							$mediumImageMedia = $mediaRow->getMediaByIdentifier('image_m');
+							echo '<div class="large-image-container">';
+								echo '<img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/>';
+							echo '</div>';
+						}
+					}
 				echo '</div>';
-				
-				echo '<div class="ehive-images-tiny-square">';
-				foreach ($imageMediaSet->mediaRows as $mediaRow) {			
-					$tsImageMedia = $mediaRow->getMediaByIdentifier('image_ts');
-					echo '<div class="ehive-images-tiny-square-image-wrap" >';
-						echo '<img src="'.$tsImageMedia->getMediaAttribute('url').'" alt="'.$tsImageMedia->getMediaAttribute('title').'" title="'.$tsImageMedia->getMediaAttribute('title').'" width="'.$tsImageMedia->getMediaAttribute('width').'" height="'.$tsImageMedia->getMediaAttribute('height').'" '.$imageInlineStyle.'/>';
-					echo '</div>';
-				}
-				
-				echo '</div>';
-				echo '<a class ="ehive-magnifying-glass png-fix" href="'.$largeImageMedia->getMediaAttribute('url').'" rel="prettyPhoto" title="'.$largeImageMedia->getMediaAttribute('title').'"></a>';
-				echo '</div>';			
 			}
 			
 			if ($numberOfImages > 4) {
@@ -113,44 +144,48 @@ if ($css_class == "") {
 				$mediumImageMedia = $mediaRow->getMediaByIdentifier('image_m');
 								
 				echo "<div class='ehive-object-carousel-images' $galleryInlineStyle>";
-			
-				echo '<div class="large-image-container">';
-				echo '<a class="large-image" href="'.$largeImageMedia->getMediaAttribute('url').'" rel="prettyPhoto" title="'.$largeImageMedia->getMediaAttribute('title').'"><img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/></a>';
-				echo '</div>';
-					
-				echo '<a class ="ehive-magnifying-glass png-fix" href="'.$largeImageMedia->getMediaAttribute('url').'" rel="prettyPhoto" title="'.$largeImageMedia->getMediaAttribute('title').'"></a>';
-			
-				echo '<div class="widget">';
-					echo '<div class="widget_style">';
-					
-						echo '<ul>';
-						foreach ($imageMediaSet->mediaRows as $mediaRow) {			
-							$tsImageMedia = $mediaRow->getMediaByIdentifier('image_ts');			
-							echo '<li>
-									<img class="ehive-object-detail-image" src="'.$tsImageMedia->getMediaAttribute('url').'" alt="'.$tsImageMedia->getMediaAttribute('title').'" title="'.$tsImageMedia->getMediaAttribute('title').'" width="'.$tsImageMedia->getMediaAttribute('width').'" height="'.$tsImageMedia->getMediaAttribute('height').'" '.$imageInlineStyle.'/>
-								  </li>';
-						}
+
+					if ($prettyPhotoEnabled) {				
+						echo '<div class="large-image-container">';
+							echo '<a class="large-image" href="'.$largeImageMedia->getMediaAttribute('url').'" rel="prettyPhoto" title="'.$largeImageMedia->getMediaAttribute('title').'"><img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/></a>';
+						echo '</div>';	
+						echo '<a class ="ehive-magnifying-glass png-fix" href="'.$largeImageMedia->getMediaAttribute('url').'" rel="prettyPhoto" title="'.$largeImageMedia->getMediaAttribute('title').'"></a>';
 						
-						echo'</ul>';
-					echo'</div>';
-				echo'</div>';
-				
-					echo '<div class="ehive-carousel-navigation">';
-					echo '<a href="#" class="previous png-fix"></a>';
-					echo '<a href="#" class="next png-fix"></a>';
-					echo '</div>';
-				
+						echo '<div class="widget">';
+							echo '<div class="widget_style">';								
+								echo '<ul>';
+								foreach ($imageMediaSet->mediaRows as $mediaRow) {
+									$tsImageMedia = $mediaRow->getMediaByIdentifier('image_ts');
+									echo '<li><img class="ehive-object-detail-image" src="'.$tsImageMedia->getMediaAttribute('url').'" alt="'.$tsImageMedia->getMediaAttribute('title').'" title="'.$tsImageMedia->getMediaAttribute('title').'" width="'.$tsImageMedia->getMediaAttribute('width').'" height="'.$tsImageMedia->getMediaAttribute('height').'" '.$imageInlineStyle.'/></li>';
+								}								
+								echo'</ul>';
+							echo'</div>';
+						echo'</div>';
+							
+						echo '<div class="ehive-carousel-navigation">';
+							echo '<a href="#" class="previous png-fix"></a>';
+							echo '<a href="#" class="next png-fix"></a>';
+						echo '</div>';
+												
+					} else {
+						foreach ($imageMediaSet->mediaRows as $mediaRow) {
+							$mediumImageMedia = $mediaRow->getMediaByIdentifier('image_m');
+							echo '<div class="large-image-container">';
+								echo '<img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/>';
+							echo '</div>';
+						}
+					}
 				echo'</div>';	
-			}	
+			}
+				
 			echo'</div>';
 		}
-		?>
-	                 
+		?>	                 
 	<div class="ehive-item-metadata-wrap">
 	
 		<?php if ( $public_profile_name_enabled == 'on' ) {?>
 		 <p class="ehive-field ehive-identifier-public_profile_name">
-		   	<span class="ehive-field-label">From:</span>                 
+		   	<span class="ehive-field-label">From:</span>   
 		   	<a href="<?php echo $eHiveAccess->getAccountDetailsPageLink( $object->accountId )?>"><?php echo $account->publicProfileName ?></a>
 		</p>
 		<?php } ?>
