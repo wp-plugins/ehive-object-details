@@ -17,55 +17,61 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 if ($css_class == "") {
-	echo '<div class="ehive-object-detail">';
+echo '<div class="ehive-object-detail">';
 } else {
-	echo '<div class="ehive-object-detail '.$css_class.'">';
+echo '<div class="ehive-object-detail '.$css_class.'">';
 }
-	if (!isset($eHiveApiErrorMessage)) {
-		$galleryInlineStyleEnabled = false;
-		$imageInlineStyleEnabled = false;
-		$galleryInlineStyle = '';
-		$imageInlineStyle = '';
+
+if (!isset($eHiveApiErrorMessage)) {
+	$galleryInlineStyleEnabled = false;
+	$imageInlineStyleEnabled = false;
+	$galleryInlineStyle = '';
+	$imageInlineStyle = '';
 		
-		if (isset($options['gallery_background_colour_enabled']) && $options['gallery_background_colour_enabled'] == 'on') {
-			$galleryInlineStyle .= "background-color:{$options['gallery_background_colour']}; ";
-			$galleryInlineStyleEnabled = true;
-		}
-		if (isset($options['gallery_border_colour_enabled']) && $options['gallery_border_colour_enabled'] == 'on' && $options['gallery_border_width'] > 0) {
-			$galleryInlineStyle .= "border-style:solid; border-color:{$options['gallery_border_colour']}; ";
-			$galleryInlineStyle .= "border-width:{$options['gallery_border_width']}px; *margin:-{$options['gallery_border_width']}px; ";
-			$galleryInlineStyleEnabled = true;
-		}
-		if (isset($options['image_background_colour_enabled']) && $options['image_background_colour_enabled'] == 'on') {
-			$imageInlineStyle .= "background:{$options['image_background_colour']}; ";
-			$imageInlineStyleEnabled = true;
-		}
-		if (isset($options['image_padding_enabled']) && $options['image_padding_enabled'] == 'on') {
-			$imageInlineStyle .= "padding:{$options['image_padding']}px; ";
-			$imageInlineStyleEnabled = true;
-		}
-		if (isset($options['image_border_colour_enabled']) && $options['image_border_colour_enabled'] == 'on' && $options['image_border_width'] > 0) {
-			$imageInlineStyle .= "border-style:solid; border-color:{$options['image_border_colour']}; ";
-			$imageInlineStyle .= "border-width:{$options['image_border_width']}px; ";
-			$imageInlineStyleEnabled = true;
-		}
+	if (isset($options['gallery_background_colour_enabled']) && $options['gallery_background_colour_enabled'] == 'on') {
+		$galleryInlineStyle .= "background-color:{$options['gallery_background_colour']}; ";
+		$galleryInlineStyleEnabled = true;
+	}
+	if (isset($options['gallery_border_colour_enabled']) && $options['gallery_border_colour_enabled'] == 'on' && $options['gallery_border_width'] > 0) {
+		$galleryInlineStyle .= "border-style:solid; border-color:{$options['gallery_border_colour']}; border-width:{$options['gallery_border_width']}px; margin:-{$options['gallery_border_width']}px;";
+		$galleryInlineStyleEnabled = true;
+	}
+	if (isset($options['image_background_colour_enabled']) && $options['image_background_colour_enabled'] == 'on') {
+		$imageInlineStyle .= "background:{$options['image_background_colour']}; ";
+		$imageInlineStyleEnabled = true;
+	}
+	if (isset($options['image_padding_enabled']) && $options['image_padding_enabled'] == 'on') {
+		$imageInlineStyle .= "padding:{$options['image_padding']}px; ";
+		$imageInlineStyleEnabled = true;
+	}
+	if (isset($options['image_border_colour_enabled']) && $options['image_border_colour_enabled'] == 'on' && $options['image_border_width'] > 0) {
+		$imageInlineStyle .= "border-style:solid; border-color:{$options['image_border_colour']}; border-width:{$options['image_border_width']}px;";
+		$imageInlineStyleEnabled = true;
+	}
 		
-		if($galleryInlineStyleEnabled) {
-			$galleryInlineStyle = " style='$galleryInlineStyle'";
-		}
-		if($imageInlineStyleEnabled) {
-			$imageInlineStyle = " style='$imageInlineStyle'";
-		}
+	if($galleryInlineStyleEnabled) {
+		$galleryInlineStyle = " style='$galleryInlineStyle'";
+	}
+	if($imageInlineStyleEnabled) {
+		$imageInlineStyle = " style='$imageInlineStyle'";
+	}
 	
+	if (isset($options['pretty_photo_enabled']) && $options['pretty_photo_enabled'] == 'on') {
+		$prettyPhotoEnabled = true;
+	} else {
+		$prettyPhotoEnabled = false;
+	}
+	
+	if (isset($options['image_link_enabled']) && $options['image_link_enabled'] == 'on') {
+		$imageLinkEnabled = true;
+	} else {
+		$imageLinkEnabled = false;		
+	}
+	?>
 		
-		if (isset($options['pretty_photo_enabled']) && $options['pretty_photo_enabled'] == 'on') {
-			$prettyPhotoEnabled = true;
-		} else {
-			$prettyPhotoEnabled = false;
-		}
-		
-		echo '<div class="ehive-item">';
-		
+	<div class="ehive-item">
+	
+		<?php 
 		$imageMediaSet = $object->getMediaSetByIdentifier('image');	
 				
 		if (isset($imageMediaSet)){
@@ -93,7 +99,11 @@ if ($css_class == "") {
 						if ($prettyPhotoEnabled) {
 							echo ('<a rel="prettyPhoto" href="'.$largeImageMedia->getMediaAttribute('url').'" title="'.$largeImageMedia->getMediaAttribute('title').'" target="_blank"><img src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="'.$mediumImageMedia->getMediaAttribute('title').'" title="'.$mediumImageMedia->getMediaAttribute('title').'" '.$imageInlineStyle.'/></a>');
 						} else {
-							echo ('<img src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="'.$mediumImageMedia->getMediaAttribute('title').'" title="'.$mediumImageMedia->getMediaAttribute('title').'" '.$imageInlineStyle.'/>');
+							if ($imageLinkEnabled) {
+								echo ('<a href="'.$largeImageMedia->getMediaAttribute('url').'" title="'.$largeImageMedia->getMediaAttribute('title').'"><img src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="'.$mediumImageMedia->getMediaAttribute('title').'" title="'.$mediumImageMedia->getMediaAttribute('title').'" '.$imageInlineStyle.'/></a>');
+							} else {
+								echo ('<img src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="'.$mediumImageMedia->getMediaAttribute('title').'" title="'.$mediumImageMedia->getMediaAttribute('title').'" '.$imageInlineStyle.'/>');
+							}
 						}
 					echo '</div>';
 					if ($prettyPhotoEnabled) {
@@ -106,9 +116,9 @@ if ($css_class == "") {
 			if ($numberOfImages > 1 & $numberOfImages <= 4) {
 			
 				$mediaRow = $imageMediaSet->mediaRows[0];
-				
-				$largeImageMedia = $mediaRow->getMediaByIdentifier('image_l');
+								
 				$mediumImageMedia = $mediaRow->getMediaByIdentifier('image_m');							
+				$largeImageMedia = $mediaRow->getMediaByIdentifier('image_l');
 				
 				echo "<div class='ehive-object-multiple-images' $galleryInlineStyle>";
 					if ($prettyPhotoEnabled) {
@@ -128,8 +138,13 @@ if ($css_class == "") {
 					} else {
 						foreach ($imageMediaSet->mediaRows as $mediaRow) {
 							$mediumImageMedia = $mediaRow->getMediaByIdentifier('image_m');
+							$largeImageMedia = $mediaRow->getMediaByIdentifier('image_l');
 							echo '<div class="large-image-container">';
-								echo '<img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/>';
+								if ($imageLinkEnabled) {
+									echo '<a class="large-image" href="'.$largeImageMedia->getMediaAttribute('url').'" title="'.$largeImageMedia->getMediaAttribute('title').'"><img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/></a>';								
+								} else {
+									echo '<img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/>';
+								}
 							echo '</div>';
 						}
 					}
@@ -170,8 +185,13 @@ if ($css_class == "") {
 					} else {
 						foreach ($imageMediaSet->mediaRows as $mediaRow) {
 							$mediumImageMedia = $mediaRow->getMediaByIdentifier('image_m');
+							$largeImageMedia = $mediaRow->getMediaByIdentifier('image_l');
 							echo '<div class="large-image-container">';
-								echo '<img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/>';
+								if ($imageLinkEnabled) {
+									echo '<a class="large-image" href="'.$largeImageMedia->getMediaAttribute('url').'" title="'.$largeImageMedia->getMediaAttribute('title').'"><img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/></a>';
+								} else {
+									echo '<img class="large-image" src="'.$mediumImageMedia->getMediaAttribute('url').'" alt="" '.$imageInlineStyle.'/>';
+								}								
 							echo '</div>';
 						}
 					}
@@ -181,38 +201,55 @@ if ($css_class == "") {
 			echo'</div>';
 		}
 		?>	                 
-	<div class="ehive-item-metadata-wrap">
 	
-		<?php if ( $public_profile_name_enabled == 'on' ) {?>
-		 <p class="ehive-field ehive-identifier-public_profile_name">
-		   	<span class="ehive-field-label">From:</span>   
-		   	<a href="<?php echo $eHiveAccess->getAccountDetailsPageLink( $object->accountId )?>"><?php echo $account->publicProfileName ?></a>
-		</p>
-		<?php } ?>
+		<?php 	
+		if (isset($options['public_profile_name_enabled']) && $options['public_profile_name_enabled'] == 'on') {
+			$publicProfileNameEnabled = true;
+		} else {
+			$publicProfileNameEnabled = false;
+		}
+		if (isset($options['public_profile_name_link_enabled']) && $options['public_profile_name_link_enabled'] == 'on') {
+			$publicProfileNameLinkEnabled = true;
+		} else {
+			$publicProfileNameLinkEnabled = false;		
+		}
+		?>	
+	
+		<div class="ehive-item-metadata-wrap">	
+	
+			<?php 
+			if ( $publicProfileNameEnabled ) {
+				echo '<p class="ehive-field ehive-identifier-public_profile_name">';
+				echo '<span class="ehive-field-label">From:</span>';   
+				if ($publicProfileNameLinkEnabled) { 
+					echo '<a href="'.$eHiveAccess->getAccountDetailsPageLink( $object->accountId ).'">'.$account->publicProfileName.'</a>';
+				} else { 
+					echo $account->publicProfileName;
+				}
+				echo '</p>';
+			} 
+						  
+			foreach( $object->fieldSets as $fieldSet ) {
+				foreach( $fieldSet->fieldRows as $fieldRow ) {			
+					foreach( $fieldRow->fields as $field ) {
 			
-		<?php  
-		foreach( $object->fieldSets as $fieldSet ) {
-			foreach( $fieldSet->fieldRows as $fieldRow ) {			
-				foreach( $fieldRow->fields as $field ) {
-		
-					$identifier = $field->identifier;
-					$label = $field->getFieldAttribute("label");
-					$value = nl2br( $field->getFieldAttribute("value") );
-					
-					if ($label) { 
-						echo ('<p class="ehive-field ehive-identifier-'.$identifier.'">');					
-							echo ('<span class="ehive-field-label">'.$label.'</span>');
-							echo $value;
-						echo ('</p>');
-					} 				
-				}			
-			}
-		} 		
-		?>
+						$identifier = $field->identifier;
+						$label = $field->getFieldAttribute("label");
+						$value = nl2br( $field->getFieldAttribute("value") );
+						
+						if ($label) { 
+							echo ('<p class="ehive-field ehive-identifier-'.$identifier.'">');					
+								echo ('<span class="ehive-field-label">'.$label.'</span>');
+								echo $value;
+							echo ('</p>');
+						} 				
+					}			
+				}
+			} 		
+			?>
 		</div>
 	</div>
-	</div>
-	<?php } else { ?>	
-		<p class='ehive-error-message ehive-objects-details-error'><?php echo $eHiveApiErrorMessage; ?></p>	
-	<?php }?>
+<?php } else { ?>	
+	<p class='ehive-error-message ehive-objects-details-error'><?php echo $eHiveApiErrorMessage; ?></p>	
+<?php }?>
 </div>

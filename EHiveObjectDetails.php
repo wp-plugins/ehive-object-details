@@ -4,7 +4,7 @@
 	Plugin URI: http://developers.ehive.com/wordpress-plugins/
 	Author: Vernon Systems limited
 	Description: Displays an eHive object. The <a href="http://developers.ehive.com/wordpress-plugins#ehiveaccess" target="_blank">eHiveAccess plugin</a> must be installed.
-	Version: 2.1.2
+	Version: 2.1.3
 	Author URI: http://vernonsystems.com
 	License: GPL2+
 */
@@ -29,7 +29,10 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
 
     class EHiveObjectDetails {
     	
-        function __construct() {
+    	const CURRENT_VERSION = 1; // Increment each time an upgrade is required / options added or deleted.
+    	const EHIVE_OBJECT_DETAILS_OPTIONS = "ehive_object_details_options";
+    	
+        function __construct() {        	        	
         	add_action("admin_init", array(&$this, "ehive_object_details_admin_options_init"));
         	add_action("admin_menu", array(&$this, "ehive_object_details_admin_menu"));
         	
@@ -40,8 +43,10 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         }
         
         function ehive_object_details_admin_options_init(){
+        	
+        	$this->ehive_plugin_update();
         
-        	register_setting('ehive_object_details_options', 'ehive_object_details_options', array(&$this, 'plugin_options_validate') );
+        	register_setting(self::EHIVE_OBJECT_DETAILS_OPTIONS, self::EHIVE_OBJECT_DETAILS_OPTIONS, array(&$this, 'plugin_options_validate') );
         	 
         	add_settings_section('comment_section', '', array(&$this, 'comment_section_fn'), __FILE__);
         	 
@@ -56,7 +61,10 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         //	Validation
         //
         function plugin_options_validate($input) {
-        	add_settings_error('ehive_object_details_options', 'updated', 'eHive Object Details settings saved.', 'updated');
+        	add_settings_error(self::EHIVE_OBJECT_DETAILS_OPTIONS, 'updated', 'eHive Object Details settings saved.', 'updated');
+        	        	 
+        	$input["update_version"] = self::CURRENT_VERSION; // Retain the plugin version on save of opotions.
+        	
         	return $input;
         }
         
@@ -69,9 +77,11 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         
         function object_section_fn() {
         	add_settings_field('public_profile_name_enabled', 'Show public profile name', array(&$this, 'public_profile_name_enabled_fn'), __FILE__, 'object_section');
+        	add_settings_field('public_profile_name_link_enabled', 'Enable public profile name link', array(&$this, 'public_profile_name_link_enabled_fn'), __FILE__, 'object_section');        	
         	add_settings_field('object_record_name_as_page_title_enabled', 'Show object name as page title', array(&$this, 'object_record_name_as_page_title_enabled_fn'), __FILE__, 'object_section');
         	add_settings_field('pretty_photo_enabled', 'Enable prettyPhoto with object images', array(&$this, 'pretty_photo_enabled_fn'), __FILE__, 'object_section');
-        	add_settings_field('images_to_display', 'Images to display', array(&$this, 'images_to_display_fn'), __FILE__, 'object_section');        	        	
+        	add_settings_field('images_to_display', 'Images to display', array(&$this, 'images_to_display_fn'), __FILE__, 'object_section');
+        	add_settings_field('image_link_enabled', 'Enable image link', array(&$this, 'image_link_enabled_fn'), __FILE__, 'object_section');
         }
         
         function style_section_fn() {
@@ -81,27 +91,33 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         
         function css_inline_section_fn() {
         	add_settings_field('gallery_background_colour', 'Gallery background colour', array(&$this, 'gallery_background_colour_fn'), __FILE__, 'css_inline_section');
-        	add_settings_field('gallery_border_colour', 'Gallery border colour', array(&$this, 'gallery_border_colour_fn'), __FILE__, 'css_inline_section');
-        	add_settings_field('gallery_border_width', 'Gallery border width', array(&$this, 'gallery_border_width_fn'), __FILE__, 'css_inline_section');
+        	add_settings_field('gallery_border_colour', 'Gallery border', array(&$this, 'gallery_border_colour_fn'), __FILE__, 'css_inline_section');
         	add_settings_field('image_background_colour', 'Image background colour', array(&$this, 'image_background_colour_fn'), __FILE__, 'css_inline_section');
         	add_settings_field('image_padding', 'Image padding', array(&$this, 'image_padding_fn'), __FILE__, 'css_inline_section');
-        	add_settings_field('image_border_colour', 'Image border colour', array(&$this, 'image_border_colour_fn'), __FILE__, 'css_inline_section');
-        	add_settings_field('image_border_width', 'Image border width', array(&$this, 'image_border_width_fn'), __FILE__, 'css_inline_section');
+        	add_settings_field('image_border_colour', 'Image border', array(&$this, 'image_border_colour_fn'), __FILE__, 'css_inline_section');
         }
         
         //
         //	OBJECT SECTION
         //
         function public_profile_name_enabled_fn() {
-        	$options = get_option('ehive_object_details_options');
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
         	if($options['public_profile_name_enabled']) {
         		$checked = ' checked="checked" ';
         	}
         	echo "<input ".$checked." id='public_profile_name_enabled' name='ehive_object_details_options[public_profile_name_enabled]' type='checkbox' />";
         }
         
+        function public_profile_name_link_enabled_fn() {
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
+        	if($options['public_profile_name_link_enabled']) {
+        		$checked = ' checked="checked" ';
+        	}
+        	echo "<input ".$checked." id='public_profile_name_link_enabled' name='ehive_object_details_options[public_profile_name_link_enabled]' type='checkbox' />";
+        }
+        
         function object_record_name_as_page_title_enabled_fn() {
-        	$options = get_option('ehive_object_details_options');
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
         	if($options['object_record_name_as_page_title_enabled']) {
         		$checked = ' checked="checked" ';
         	}
@@ -109,7 +125,7 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         }
 
         function pretty_photo_enabled_fn() {
-        	$options = get_option('ehive_object_details_options');
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
         	if($options['pretty_photo_enabled']) {
         		$checked = ' checked="checked" ';
         	}
@@ -118,7 +134,7 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         }
         
         function images_to_display_fn() {
-        	$options = get_option('ehive_object_details_options');
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
         	$items = array("All images", "First image");
         	foreach($items as $item) {
         		$checked = ($options['images_to_display']==$item) ? ' checked="checked" ' : '';
@@ -126,13 +142,21 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         	}
         }
         
+        function image_link_enabled_fn() {
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
+        	if($options['image_link_enabled']) {
+        		$checked = ' checked="checked" ';
+        	}
+        	echo "<input ".$checked." id='image_link_enabled' name='ehive_object_details_options[image_link_enabled]' type='checkbox' />";
+        	echo '<p>When prettyPhoto is disabled the image link option allows linking to larger images.';
+        }
         
         
         //
         //	CSS SECTION
         //
         function plugin_css_enabled_fn() {
-        	$options = get_option('ehive_object_details_options');
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
         	if($options['plugin_css_enabled']) {
         		$checked = ' checked="checked" ';
         	}
@@ -140,7 +164,7 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         }
         
         function css_class_fn() {
-        	$options = get_option('ehive_object_details_options');
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
         	echo "<input class='regular-text' id='css_class' name='ehive_object_details_options[css_class]' type='text' value='{$options['css_class']}' />";
         	echo '<p>Adds a class name to the ehive-object-detail div.';
         }
@@ -149,71 +173,69 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         //	inline CSS optons
         //
         function gallery_background_colour_fn() {
-        	$options = get_option('ehive_object_details_options');
-        	if(isset($options['gallery_background_colour_enabled']) && $options['gallery_background_colour_enabled'] == 'on') {
-        		$checked = ' checked="checked" ';
-        	}
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
         	echo "<input class='medium-text' id='gallery_background_colour' name='ehive_object_details_options[gallery_background_colour]' type='text' value='{$options['gallery_background_colour']}' />";
         	echo '<div id="gallery_background_colourpicker"></div>';
-			echo "<td><input ".$checked." id='gallery_background_colour_enabled' name='ehive_object_details_options[gallery_background_colour_enabled]' type='checkbox' /></td>";
-			echo "<td rowspan='8'><img src='/wp-content/plugins/ehive-object-details/images/object_details_item.png' /></td>";			
+			
+        	if(isset($options['gallery_background_colour_enabled']) && $options['gallery_background_colour_enabled'] == 'on') {
+        		$checked = ' checked="checked" ';
+        	}        	 
+        	echo "<td><input ".$checked." id='gallery_background_colour_enabled' name='ehive_object_details_options[gallery_background_colour_enabled]' type='checkbox' /></td>";
+			
+			echo "<td rowspan='10'><img src='/wp-content/plugins/ehive-object-details/images/object_details_item.png' /></td>";			
         }
         
         function gallery_border_colour_fn() {
-			$options = get_option('ehive_object_details_options');
-        	if(isset($options['gallery_border_colour_enabled']) && $options['gallery_border_colour_enabled'] == 'on') {
-        		$checked = ' checked="checked" ';
-			}
+			$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
 			echo "<input class='medium-text' id='gallery_border_colour' name='ehive_object_details_options[gallery_border_colour]' type='text' value='{$options['gallery_border_colour']}' />";
 			echo '<div id="gallery_border_colourpicker"></div>';
-			echo "<td><input ".$checked." id='gallery_border_colour_enabled' name='ehive_object_details_options[gallery_border_colour_enabled]' type='checkbox' /></td>";
-		}
-        
-		function gallery_border_width_fn() {
-			$options = get_option('ehive_object_details_options');
-        	if(isset($options['gallery_border_width_enabled']) && $options['gallery_border_width_enabled'] == 'on') {
-        			$checked = ' checked="checked" ';
-			}
+
 			echo "<input class='small-text' id='gallery_border_width' name='ehive_object_details_options[gallery_border_width]' type='number' value='{$options['gallery_border_width']}' />";
-        }
-        
-        function image_background_colour_fn() {
-			$options = get_option('ehive_object_details_options');
-			if(isset($options['image_background_colour_enabled']) && $options['image_background_colour_enabled'] == 'on') {
+				
+			if(isset($options['gallery_border_colour_enabled']) && $options['gallery_border_colour_enabled'] == 'on') {
 				$checked = ' checked="checked" ';
 			}
+			echo "<td><input ".$checked." id='gallery_border_colour_enabled' name='ehive_object_details_options[gallery_border_colour_enabled]' type='checkbox' /></td>";
+        }
+                
+        function image_background_colour_fn() {
+			$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
 			echo "<input class='medium-text' id='image_background_colour' name='ehive_object_details_options[image_background_colour]' type='text' value='{$options['image_background_colour']}' />";
 			echo '<div id="image_background_colourpicker"></div>';
+			
+			if(isset($options['image_background_colour_enabled']) && $options['image_background_colour_enabled'] == 'on') {
+				$checked = ' checked="checked" ';
+			}				
 			echo "<td><input ".$checked." id='image_background_colour_enabled' name='ehive_object_details_options[image_background_colour_enabled]' type='checkbox' /></td>";
 		}
         
 		function image_padding_fn() {
-			$options = get_option('ehive_object_details_options');
-			if(isset($options['image_padding_enabled']) && $options['image_padding_enabled'] == 'on') {
-				$checked = ' checked="checked" ';
-        	}
+			$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
         	echo "<input class='small-text' id='image_padding' name='ehive_object_details_options[image_padding]' type='number' value='{$options['image_padding']}' />";
+
+        	if(isset($options['image_padding_enabled']) && $options['image_padding_enabled'] == 'on') {
+        		$checked = ' checked="checked" ';
+        	}        	 
         	echo "<td><input ".$checked." id='image_padding_enabled' name='ehive_object_details_options[image_padding_enabled]' type='checkbox' /></td>";
 		}
         
+		
 		function image_border_colour_fn() {
-        	$options = get_option('ehive_object_details_options');
-        	if(isset($options['image_border_colour_enabled']) && $options['image_border_colour_enabled'] == 'on') {
-				$checked = ' checked="checked" ';
-			}
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
 			echo "<input class='medium-text' id='image_border_colour' name='ehive_object_details_options[image_border_colour]' type='text' value='{$options['image_border_colour']}' />";
 			echo '<div id="image_border_colourpicker"></div>';
-			echo "<td rowspan='2'><input ".$checked." id='image_border_colour_enabled' name='ehive_object_details_options[image_border_colour_enabled]' type='checkbox' /></td>";
+
+			echo "<input class='small-text' id='image_border_width' name='ehive_object_details_options[image_border_width]' type='number' value='{$options['image_border_width']}' />";
+				
+			
+			if(isset($options['image_border_colour_enabled']) && $options['image_border_colour_enabled'] == 'on') {
+				$checked = ' checked="checked" ';
+			}
+			echo "<td><input ".$checked." id='image_border_colour_enabled' name='ehive_object_details_options[image_border_colour_enabled]' type='checkbox' /></td>";				
 		}
         
-		function image_border_width_fn() {
-        	$options = get_option('ehive_object_details_options');
-        	if(isset($options['image_border_width_enabled']) && $options['image_border_width_enabled'] == 'on') {
-        		$checked = ' checked="checked" ';
-        	}
-        	echo "<input class='small-text' id='image_border_width' name='ehive_object_details_options[image_border_width]' type='number' value='{$options['image_border_width']}' />";
-		}
-       
+		       
+		
         //
 		//	Admin menu setup
 		//
@@ -319,7 +341,7 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         	 
         	if (is_page( $objectDetailsPageId )) {
         
-        		$options = get_option('ehive_object_details_options');
+        		$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
                 		
         		if ($options['plugin_css_enabled'] == 'on') {
         			wp_register_style($handle = 'eHiveObjectDetailsCSS', $src = plugins_url('eHiveObjectDetails.css', '/ehive-object-details/css/eHiveObjectDetails.css'), $deps = array(), $ver = '0.0.1', $media = 'all');
@@ -327,7 +349,7 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         		}
         
         		if ($options['pretty_photo_enabled'] == 'on') {
-        			wp_register_style($handle = 'prettyPhoto', $src = plugins_url('prettyPhoto.css', '/ehive-object-details/js/prettyphoto/css/prettyPhoto'), $deps = array(), $ver = '1.0.0', $media = 'all');
+        			wp_register_style($handle = 'prettyPhoto', $src = plugins_url('prettyPhoto.css', '/ehive-object-details/js/prettyPhoto/css/prettyPhoto'), $deps = array(), $ver = '1.0.0', $media = 'all');
         			wp_enqueue_style( 'prettyPhoto');
         		}
         	}        	
@@ -344,18 +366,19 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         	 
         	if (is_page( $objectDetailsPageId )){
         		 
-				$options = get_option('ehive_object_details_options');
+				$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
 
         		wp_enqueue_script( 'jquery' );
         
         		if ($options['pretty_photo_enabled'] == 'on') {
-        			wp_register_script($handle = 'jcarousellite', $src= plugins_url('jcarousellite_1.0.1.min.js', '/ehive-object-details/js/jcarousellite_1.0.1.min.js'), $deps = array('jquery'), $ver = '1.0.0', false);
-        			wp_enqueue_script( 'jcarousellite' );
         
-        			wp_register_script($handle = 'prettyPhoto', $src= plugins_url('jquery.prettyPhoto.js', '/ehive-object-details/js/prettyphoto/js/jquery.prettyPhoto.js'), $deps = array('jquery'), $ver = '1.0.0', false);
+        			wp_register_script($handle = 'prettyPhoto', $src= plugins_url('jquery.prettyPhoto.js', '/ehive-object-details/js/prettyPhoto/js/jquery.prettyPhoto.js'), $deps = array('jquery'), $ver = '1.0.0', false);
         			wp_enqueue_script( 'prettyPhoto' );
-        			
-        			wp_register_script($handle = 'eHiveObjectDetails', $src= plugins_url('eHiveObjectDetails.js', '/ehive-object-details/js/eHiveObjectDetails.js'), $deps = array('jquery','jcarousellite','prettyPhoto'), $ver = '1.0.0', false);
+
+        			wp_register_script($handle = 'jcarousellite', $src= plugins_url('jcarousellite_1.0.1.min.js', '/ehive-object-details/js/jcarousellite_1.0.1.min.js'), $deps = array('jquery','prettyPhoto'), $ver = '1.0.0', false);
+        			wp_enqueue_script( 'jcarousellite' );
+        			         			
+        			wp_register_script($handle = 'eHiveObjectDetails', $src= plugins_url('eHiveObjectDetails.js', '/ehive-object-details/js/eHiveObjectDetails.js'), $deps = array('jquery','prettyPhoto','jcarousellite'), $ver = '1.0.0', false);
         			wp_enqueue_script( 'eHiveObjectDetails' );        			 
         		}
         	}        	
@@ -366,7 +389,7 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         //
         public function ehive_object_details_shortcode($atts) {
         	
-        	$options = get_option('ehive_object_details_options');
+        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
         	        	        	
         	extract(shortcode_atts(array('public_profile_name_enabled' 				=> isset($options['public_profile_name_enabled']) ? 'on' : 'off',
         								 'object_record_name_as_page_title_enabled' => isset($options['object_record_name_as_page_title_enabled']) ? 'on' : 'off',
@@ -447,37 +470,84 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         	global $wp_rewrite;
         	$wp_rewrite->flush_rules();
         }
+
+        //
+        //	Setup the plugin options, handle upgrades to the plugin.
+        //
+        function ehive_plugin_update() {
+									        	
+			// Add the default options.					
+			if ( get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS) === false ) {
+				
+				$options = array("update_version"=>self::CURRENT_VERSION,
+								 "public_profile_name_enabled"=>"on",
+								 "public_profile_name_link_enabled"=>"on",
+								 "pretty_photo_enabled"=>"on",
+								 "plugin_css_enabled"=>"on",
+								 "images_to_display"=>"All images",
+								 "image_link_enabled"=>"on",
+								 "css_class"=>"",
+
+								 "gallery_background_colour"=>"#f3f3f3",
+								 "gallery_background_colour_enabled"=>'on',
+
+								 "gallery_border_colour"=>"#666666",
+								 "gallery_border_colour_enabled"=>'',
+								 "gallery_border_width"=>"2",
+
+								 "image_background_colour"=>"#ffffff",
+								 "image_background_colour_enabled"=>'on',
+
+								 "image_padding"=>"1",
+								 "image_padding_enabled"=>"on",
+
+								 "image_border_colour"=>"#666666",
+								 "image_border_colour_enabled"=>'on',
+								 "image_border_width"=>"2" );
+					
+				add_option(self::EHIVE_OBJECT_DETAILS_OPTIONS, $options);				
+												
+			} else { 
+						
+				$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
+				
+				if ( array_key_exists("update_version", $options)) {
+					$updateVersion = $options["update_version"];					
+				} else {
+					$updateVersion = 0; 
+				}
+								
+				if ( $updateVersion == self::CURRENT_VERSION ) {
+					// Nothing to do.			
+				}  else {
+								
+					if ( $updateVersion == 0 ) {
+																			
+						$options["public_profile_name_link_enabled"] = "on";
+						$options["pretty_photo_enabled"] = "on";
+						$options["images_to_display"] = "All images";					
+						$options["image_link_enabled"] = "on";
+							
+						$updateVersion = 1; 
+					}
+					
+					// End of the update chain, save the options to the database.
+					$options["update_version"] = self::CURRENT_VERSION;
+					update_option(self::EHIVE_OBJECT_DETAILS_OPTIONS, $options);						
+				}				
+			}				
+		}
                 
         //
         //	On plugin activate
         //	
-        public function activate() {        	
-        	$arr = array("public_profile_name_enabled"=>"on",
-						 "pretty_photo_enabled"=>"on",
-        				 "plugin_css_enabled"=>"on",
-						 "images_to_display"=>"All images",
-						 "css_class"=>"",
-						 "gallery_background_colour"=>"#f3f3f3",
-						 "gallery_background_colour_enabled"=>'on',
-						 "gallery_border_colour"=>"#666666",
-						 "gallery_border_colour_enabled"=>'',
-						 "gallery_border_width"=>"2",
-						 "image_background_colour"=>"#ffffff",
-						 "image_background_colour_enabled"=>'on',
-						 "image_padding"=>"1",
-						 "image_padding_enabled"=>"on",
-						 "image_border_colour"=>"#666666",
-						 "image_border_colour_enabled"=>'on',
-						 "image_border_width"=>"2");
-        	 
-        	update_option('ehive_object_details_options', $arr);        	
+        public function activate() {        	        	       	
         }
 
         //
         //	On plugin deactivate
         //
-        public function deactivate() {
-        	delete_option('ehive_object_details_options');
+        public function deactivate() { 
         }
     }
 

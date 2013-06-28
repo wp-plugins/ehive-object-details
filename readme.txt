@@ -4,7 +4,7 @@ Donate link:http://ehive.com/what_is_ehive
 Tags: ehive, collection, museum, archive, history
 Requires at least: 3.3.1
 Tested up to: 3.5.1
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,13 @@ There are three ways to install a plugin:
 4. Click the "Activate plugin" link below the plugin's name
 
 == Changelog ==
+= 2.1.3 =
+* Fixed markup bug, removed stray closing div that was breaking some Themes sidebar layouts.
+* Added option to enable or disable linking to an eHive account from the public profile name.
+* Added option to enable or disable linking to a larger image when displaying images with prettyPhoto disabled.
+* Added uninstall script to remove options from the database when the plugin is deleted. 
+* Added version control for plugin options. Defaulting of new options without changing existing options is now possible. 
+
 = 2.1.2 =
 * Upgraded prettyPhoto to version 3.1.5
 * Included admin option to disable prettyPhoto
@@ -89,6 +96,14 @@ There are three ways to install a plugin:
 * First stable release of the eHive Access plugin. 
 
 == Upgrade Notice ==
+= 2.1.3 =
+* Fixed markup bug, removed stray closing div that was breaking some Themes sidebar layouts.
+* Added option to enable or disable linking to an eHive account from the public profile name.
+* Added option to enable or disable linking to a larger image when displaying images with prettyPhoto disabled.
+* Added uninstall script to remove options from the database when the plugin is deleted. 
+* Added version control for plugin options. Defaulting of new options without changing existing options is now possible. 
+
+
 = 2.1.2 =
 * Upgraded prettyPhoto to version 3.1.5
 * Included admin option to disable prettyPhoto
