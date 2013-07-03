@@ -228,7 +228,7 @@ if (!isset($eHiveApiErrorMessage)) {
 				}
 				echo '</p>';
 			} 
-						  
+
 			foreach( $object->fieldSets as $fieldSet ) {
 				foreach( $fieldSet->fieldRows as $fieldRow ) {			
 					foreach( $fieldRow->fields as $field ) {
@@ -240,7 +240,7 @@ if (!isset($eHiveApiErrorMessage)) {
 						if ($label) { 
 							echo ('<p class="ehive-field ehive-identifier-'.$identifier.'">');					
 								echo ('<span class="ehive-field-label">'.$label.'</span>');
-								echo $value;
+								echo ('<span class="ehive-field-value">'.$value.'</span>');
 							echo ('</p>');
 						} 				
 					}			

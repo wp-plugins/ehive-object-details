@@ -4,7 +4,7 @@
 	Plugin URI: http://developers.ehive.com/wordpress-plugins/
 	Author: Vernon Systems limited
 	Description: Displays an eHive object. The <a href="http://developers.ehive.com/wordpress-plugins#ehiveaccess" target="_blank">eHiveAccess plugin</a> must be installed.
-	Version: 2.1.3
+	Version: 2.1.4
 	Author URI: http://vernonsystems.com
 	License: GPL2+
 */
@@ -78,7 +78,6 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         function object_section_fn() {
         	add_settings_field('public_profile_name_enabled', 'Show public profile name', array(&$this, 'public_profile_name_enabled_fn'), __FILE__, 'object_section');
         	add_settings_field('public_profile_name_link_enabled', 'Enable public profile name link', array(&$this, 'public_profile_name_link_enabled_fn'), __FILE__, 'object_section');        	
-        	add_settings_field('object_record_name_as_page_title_enabled', 'Show object name as page title', array(&$this, 'object_record_name_as_page_title_enabled_fn'), __FILE__, 'object_section');
         	add_settings_field('pretty_photo_enabled', 'Enable prettyPhoto with object images', array(&$this, 'pretty_photo_enabled_fn'), __FILE__, 'object_section');
         	add_settings_field('images_to_display', 'Images to display', array(&$this, 'images_to_display_fn'), __FILE__, 'object_section');
         	add_settings_field('image_link_enabled', 'Enable image link', array(&$this, 'image_link_enabled_fn'), __FILE__, 'object_section');
@@ -116,14 +115,6 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
         	echo "<input ".$checked." id='public_profile_name_link_enabled' name='ehive_object_details_options[public_profile_name_link_enabled]' type='checkbox' />";
         }
         
-        function object_record_name_as_page_title_enabled_fn() {
-        	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
-        	if($options['object_record_name_as_page_title_enabled']) {
-        		$checked = ' checked="checked" ';
-        	}
-        	echo "<input ".$checked." id='object_record_name_as_page_title_enabled' name='ehive_object_details_options[object_record_name_as_page_title_enabled]' type='checkbox' />";
-        }
-
         function pretty_photo_enabled_fn() {
         	$options = get_option(self::EHIVE_OBJECT_DETAILS_OPTIONS);
         	if($options['pretty_photo_enabled']) {
