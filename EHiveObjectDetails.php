@@ -4,7 +4,7 @@
 	Plugin URI: http://developers.ehive.com/wordpress-plugins/
 	Author: Vernon Systems limited
 	Description: Displays an eHive object. The <a href="http://developers.ehive.com/wordpress-plugins#ehiveaccess" target="_blank">eHiveAccess plugin</a> must be installed.
-	Version: 2.1.4
+	Version: 2.1.5
 	Author URI: http://vernonsystems.com
 	License: GPL2+
 */
@@ -445,9 +445,13 @@ if (in_array('ehive-access/EHiveAccess.php', (array) get_option('active_plugins'
             
             if ($pageId != 0) {            
 	            $page = get_post($pageId);	            
-	            $objectRecordIdToken = '%eHiveObjectId%';                        
-	            $wp_rewrite->add_rewrite_tag($objectRecordIdToken, '([0-9]+)', "pagename={$page->post_name}&ehive_object_record_id=");            
-	            $rules = $wp_rewrite->generate_rewrite_rules($wp_rewrite->root . "/{$page->post_name}/$objectRecordIdToken") + $rules;
+	            $objectRecordIdToken = '%eHiveObjectId%';           
+
+	            $permalink = get_permalink( $pageId );
+	            $permalinkNoDomain = str_replace( home_url(), "", $permalink );
+
+	            $wp_rewrite->add_rewrite_tag($objectRecordIdToken, '([0-9]+)', "pagename={$permalinkNoDomain}&ehive_object_record_id=");	             
+	            $rules = $wp_rewrite->generate_rewrite_rules($wp_rewrite->root . "{$permalinkNoDomain}$objectRecordIdToken") + $rules;	             
             }
             return $rules;
         }
