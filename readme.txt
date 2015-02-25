@@ -3,8 +3,8 @@ Contributors: vernonsystems
 Donate link:http://ehive.com/what_is_ehive
 Tags: ehive, collection, museum, archive, history
 Requires at least: 3.3.1
-Tested up to: 4.0
-Stable tag: 2.1.5
+Tested up to: 4.1.1
+Stable tag: 2.1.6
 License: GPL2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,10 @@ There are three ways to install a plugin:
 4. Click the "Activate plugin" link below the plugin's name
 
 == Changelog ==
+= 2.1.6 =
+* Fixed broken links to static images when WordPress is installed in a sub folder.
+* Help menu in admin panel now displays when the eHive Search plugin in not installed.
+
 = 2.1.5 =
 * Fixed rewrite rule so plugin will work on a page that has a parent page.
 
@@ -103,6 +107,10 @@ There are three ways to install a plugin:
 * First stable release of the eHive Access plugin. 
 
 == Upgrade Notice ==
+= 2.1.6 =
+* Fixed broken links to static images when WordPress is installed in a sub folder.
+* Help menu in admin panel now displays when the eHive Search plugin in not installed.
+
 = 2.1.5 =
 * Fixed rewrite rule so plugin will work on a page that has a parent page.
 
