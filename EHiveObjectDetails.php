@@ -4,7 +4,7 @@
 	Plugin URI: http://developers.ehive.com/wordpress-plugins/
 	Author: Vernon Systems limited
 	Description: Displays an eHive object. The <a href="http://developers.ehive.com/wordpress-plugins#ehiveaccess" target="_blank">eHiveAccess plugin</a> must be installed.
-	Version: 2.1.6
+	Version: 2.1.7
 	Author URI: http://vernonsystems.com
 	License: GPL2+
 */
